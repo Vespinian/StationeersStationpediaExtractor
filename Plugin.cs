@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using Assets.Scripts;
 using Assets.Scripts.Atmospherics;
-using Assets.Scripts.Inventory;
 using Assets.Scripts.Objects;
 using Assets.Scripts.Objects.Appliances;
 using Assets.Scripts.Objects.Clothing;
@@ -17,16 +15,12 @@ using Assets.Scripts.Objects.Entities;
 using Assets.Scripts.Objects.Items;
 using Assets.Scripts.Objects.Motherboards;
 using Assets.Scripts.Objects.Pipes;
-using Assets.Scripts.Localization2;
 using Assets.Scripts.UI;
 using BepInEx;
-using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Objects.Items;
-using Objects.Rockets;
 using Reagents;
-using UI.ImGuiUi.Debug;
 using UnityEngine;
 using Util.Commands;
 
@@ -41,13 +35,14 @@ public class Plugin : BaseUnityPlugin
     private const string pluginGuid = "io.inp.stationeers.stationpediaextractor";
     private const string pluginName = "Stationpedia Extractor";
     private const string pluginVersion = "1.0.0";
-    private static Plugin instance;
+    private static Plugin? instance;
 
     public Plugin() : base() => Plugin.instance = this;
 
     public static void Log(object line)
     {
-        instance.Logger.LogInfo(line);
+        if (instance != null)
+            instance.Logger.LogInfo(line);
     }
 
     private void Awake()
@@ -856,9 +851,13 @@ struct OutputPrefab
                         {
                             val = consumable.CreatedReagentMixture.Get(reagent);
                         }
-                        else
+                        else if (ingredient != null)
                         {
                             val = ingredient.AddMixture.Get(reagent);
+                        }
+                        else
+                        {
+                            val = 0;
                         }
 
                         if (val > 0.0)
@@ -1144,7 +1143,8 @@ class StationpediaExportCommand : CommandBase
                             catch (Exception ex)
                             {
                                 ConsoleWindow.Print($"Failed to export thumbnail for prefab {page.PrefabName}", ConsoleColor.Red);
-                                ConsoleWindow.PrintError(ex);
+                                ConsoleWindow.Print($"Exception {ex.ToString()}", ConsoleColor.Red);
+                                // ConsoleWindow.PrintError(ex);
                             }
                         }
                     }
