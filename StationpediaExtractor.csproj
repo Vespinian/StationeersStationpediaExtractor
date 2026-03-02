@@ -43,8 +43,10 @@
     </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-<PackageReference Include="UnityEngine.Modules" Version="2021.2.3" IncludeAssets="compile" />
+      <Reference Include="Newtonsoft.Json">
+          <HintPath>$(GameDir)\rocketstation_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+      <PackageReference Include="UnityEngine.Modules" Version="2021.2.3" IncludeAssets="compile" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
